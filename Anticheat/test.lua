@@ -1,5 +1,4 @@
 -- if you see this, i wrote this in school so dont blame me if it doesnt work, im fixing it when I get home lol
-
 Settings = {
     Anticheat_Enabled = true,
     Normal_Walk_Speed = 16,
@@ -37,6 +36,8 @@ Settings = {
     },
     Invalid_Jump = true,
     Invalid_Jump_VL = 0,
+    Self_Damage = true,
+    Self_Damage_VL = 0,
 }
 
 game.Players.OnPlayerAdded:Connect(function(plr)
@@ -103,6 +104,11 @@ game.Players.OnPlayerAdded:Connect(function(plr)
                 spawn(function()
                     if (Settings.Invalid_Jump_VL == 5) then
                         plr:Kick("You have been detected cheating. Violations: Invalid_Jump")
+                    end
+                end)
+                spawn(function()
+                    if (Settings.Invalid_Jump_VL == 5) then
+                        plr:Kick("You have been detected cheating. Violations: Self_Damage")
                     end
                 end)
                 task.wait()
@@ -281,14 +287,38 @@ game.Players.OnPlayerAdded:Connect(function(plr)
             end
 
             -- Invalid Jump Check
-            if (Settings.Invalid_Jump) then
+            if (Settings.Invalid_Jump == true) then
                 task.spawn(function()
                     repeat
-                        if (plr.Humanoid.FloorMaterial == Enum.Material.Air) then
-                            if (plr.Humanoid.GetState() == 3) then
+                        if (char.Humanoid.FloorMaterial == Enum.Material.Air) then
+                            if (char.Humanoid.GetState() == 3) then
                                 char.PrimaryPart.CFrame = oldpos
                                 Invalid_Jump_VL += 1
                             end
+                        end
+                        task.wait()
+                    until (false)
+                end)
+            end
+
+            local oldHp = 100
+
+            -- Self Damage Check ///////// USE THIS IF YOUR NOT MAKING A PVP GAME !!!
+            if (Settings.Self_Damage == true) then
+
+                -- Saving HP to Var
+                task.spawn(function()
+                    repeat
+                        oldHp = Char.Humanoid.Health
+                        task.wait(.3)
+                    until (false)
+                end)
+
+                -- Comparing OldHp --> NewHp (flags if different)
+                task.spawn(function()
+                    repeat
+                        if (Char.Humanoid.Health < oldHp) then
+                            Self_Damage_VL += 1
                         end
                         task.wait()
                     until (false)
