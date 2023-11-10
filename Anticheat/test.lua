@@ -1,41 +1,62 @@
--- if you see this, i wrote this in school so dont blame me if it doesnt work, im fixing it when I get home lol
 Settings = {
+    -- [[  Basics ]] --
     Anticheat_Enabled = true,
     Normal_Walk_Speed = 16,
+
+    -- [[ Checks  ]] --
+
+    -- Speed
     Speed_A = true,
     Speed_A_VL = 0,
     Speed_A_Mag = 50,
     Speed_B = true,
     Speed_B_VL = 0,
     Speed_B_WalkSpeed = 23,
+
+    -- HighJump
     HighJump_A = true,
     HighJump_A_VL = 0,
     HighJump_A_HeightValue = 100,
     HighJump_B = true,
     HighJump_B_VL = 0,
     HighJump_B_Velocity_Value = 150,
+
+    -- Flight
     Flight_A = true,
     Flight_A_VL = 0,
     Flight_A_Time = 500,
     Flight_B = true,
     Flight_B_VL = 0,
     Flight_B_Velocity_Check = -3.3,
+    
+    -- Invalid Position
     Invalid_Position = true,
     Invalid_Position_VL = 0,
     Invalid_Position_Value = 1000,
+    Invalid_Jump = true,
+    Invalid_Jump_VL = 0,
+
+    -- Invalid Humanoids
     Invalid_State_A = true,
     Invalid_State_A_VL = 0,
     Invalid_State_B = true,
     Invalid_State_B_VL = 0,
     Invalid_State_C = true,
     Invalid_State_C_VL = 0,
+    Invalid_State_D,
+    Invalid_State_D_VL,
+    Invalid_Gravity = true,
+    Invalid_Gravity_Amount = 190,
+    Invalid_Gravity_VL = 0,
+
+    -- GUIs
     Gui_Check = false,
     -- * Example for table *
     Safe_Guis = {
         ["Test"] = game.StarterGui.Test,
     },
-    Invalid_Jump = true,
-    Invalid_Jump_VL = 0,
+
+    -- Player
     Self_Damage = true,
     Self_Damage_VL = 0,
 }
@@ -107,7 +128,12 @@ game.Players.OnPlayerAdded:Connect(function(plr)
                     end
                 end)
                 spawn(function()
-                    if (Settings.Invalid_Jump_VL == 5) then
+                    if (Settings.Self_Damage_VL == 10) then
+                        plr:Kick("You have been detected cheating. Violations: Self_Damage")
+                    end
+                end)
+                spawn(function()
+                    if (Settings.Invalid_Gravity_VL == 1) then
                         plr:Kick("You have been detected cheating. Violations: Self_Damage")
                     end
                 end)
@@ -271,6 +297,19 @@ game.Players.OnPlayerAdded:Connect(function(plr)
                 end)
             end
 
+            -- Invalid State C Check (Ragdoll)
+            if (Settings.Invalid_State_D == true) then
+                task.spawn(function()
+                    repeat
+                        if (char.Humanoid.GetState() == 1) then
+                            char.PrimaryPart.CFrame = oldpos
+                            Invalid_State_D_VL += 1
+                        end
+                        task.wait()
+                    until false
+                end)
+            end
+
             -- Gui Check
             if (Settings.Gui_Check == true) then
                 task.spawn(function()
@@ -301,16 +340,16 @@ game.Players.OnPlayerAdded:Connect(function(plr)
                 end)
             end
 
-            local oldHp = 100
-
             -- Self Damage Check ///////// USE THIS IF YOUR NOT MAKING A PVP GAME !!!
             if (Settings.Self_Damage == true) then
+
+                local oldHp = 100
 
                 -- Saving HP to Var
                 task.spawn(function()
                     repeat
                         oldHp = Char.Humanoid.Health
-                        task.wait(.3)
+                        task.wait(.1)
                     until (false)
                 end)
 
@@ -319,11 +358,32 @@ game.Players.OnPlayerAdded:Connect(function(plr)
                     repeat
                         if (Char.Humanoid.Health < oldHp) then
                             Self_Damage_VL += 1
+                            char.PrimaryPart.CFrame = oldpos
                         end
                         task.wait()
                     until (false)
                 end)
+
             end
+
+            -- Invalid Gravity
+            if (Settings.Invalid_Gravity == true) then
+
+                task.spawn(function()
+                    
+                    repeat
+                        if (workspace.Gravity < Settings.Invalid_Gravity_Amount) then
+                            Invalid_Gravity_VL += 1
+                            char.PrimaryPart.CFrame = oldpos
+                            workspace.Gravity = 192.6
+                        end
+                        task.wait()
+                    until (false)
+
+                end)
+
+            end
+
         end
     end)
 end)
