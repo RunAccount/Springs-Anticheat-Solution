@@ -1,5 +1,6 @@
 Settings = {
     -- [[  Basics ]] --
+    
     Anticheat_Enabled = true,
     Normal_Walk_Speed = 16,
 
@@ -48,6 +49,10 @@ Settings = {
     Invalid_Gravity = true,
     Invalid_Gravity_Amount = 190,
     Invalid_Gravity_VL = 0,
+
+    -- Checks for 
+    Disabler_A = false,
+    Disabler_A_Value = 1, --Number of scripts in starterPlayer (NOT STARTER CHARACTER)
 
     -- GUIs
     Gui_Check = false,
@@ -382,6 +387,34 @@ game.Players.OnPlayerAdded:Connect(function(plr)
 
                 end)
 
+            end
+
+            local scriptvals = 0
+
+            if (Settings.Disabler_A == true) then
+                task.spawn(function()
+                    repeat
+                        for i,v in pairs(plr.StarterPlayerScripts:GetChildren()) do
+
+                            if (v.Name ~= SafePlayerScripts) then
+
+                                scriptvals += 1
+                                
+                            end
+
+                        end
+
+                        if (scriptvals > Disabler_A_Value) then
+
+                            plr:Kick("You have been detected cheating. Violations: Disabler_A")
+                            
+                        end
+
+                        scriptvals = 0
+
+                        task.wait()
+                    until (false)
+                end)
             end
 
         end
